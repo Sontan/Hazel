@@ -36,7 +36,7 @@ class HomeController {
 
         viewModel.config = this._config;
 
-        res.render("home", viewModel);
+        this._renderFile(res, viewModel, 'home');
     }
 
     /**
@@ -99,6 +99,12 @@ class HomeController {
             .reverse()
             .take(count)
             .value();
+    }
+
+    _renderFile(res, viewModel, pagename) {
+        viewModel.layout = `${this._config.theme_dir}${this._config.theme_name}/templates/layout.html`;
+
+        return res.render(require.resolve(`${this._config.theme_dir}${this._config.theme_name}/templates/${pagename}.html`), viewModel);
     }
 }
 

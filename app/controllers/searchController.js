@@ -31,7 +31,13 @@ class SearchController {
 
         viewModel.config = this._config;
 
-        res.render("search", viewModel);
+        this._renderFile(res, viewModel, 'search');
+    }
+
+    _renderFile(res, viewModel, pagename) {
+        viewModel.layout = `${this._config.theme_dir}${this._config.theme_name}/templates/layout.html`;
+
+        return res.render(require.resolve(`${this._config.theme_dir}${this._config.theme_name}/templates/${pagename}.html`), viewModel);
     }
 }
 

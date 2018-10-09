@@ -10,9 +10,18 @@ const _ = require("lodash");
  */
 class DocumentRepository {
 
-    constructor(documentStorageProvider) {
+    constructor(documentStorageProvider, config) {
         this._storageProvider = documentStorageProvider;
+        this._config = config;
         this._documents = this._storageProvider.getAllDocuments();
+
+        this._allDocuments = {
+            default: this._documents,
+        };
+
+        this.divide();
+
+        console.log(this._allDocuments);
     }
 
     /**
@@ -46,6 +55,7 @@ class DocumentRepository {
             this._storageProvider.storeDocument(document);
             this._documents.push(document);
         }
+        this.divide();
     }
 
     /**
@@ -61,6 +71,7 @@ class DocumentRepository {
         } else {
             this.add(document);
         }
+        this.divide();
     }
 
     /**
@@ -71,6 +82,20 @@ class DocumentRepository {
         if (existingDoc) {
             this._storageProvider.deleteDocument(existingDoc);
             _.remove(this._documents, { "slug": slug });
+            this.divide();
+        }
+    }
+
+    /**
+     * Divide all posts for different apps
+     */
+    divide() {
+        if (this._config.dividers) {
+            this._config.dividers.forEach((divider) => {
+                this._allDocuments[divider.header] = this._documents.filter(document => 
+                    divider.tags.every(tag => document.tags.includes(tag))
+                );
+            })
         }
     }
 }

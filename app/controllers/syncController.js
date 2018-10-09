@@ -43,7 +43,7 @@ class SyncController {
         viewModel.syncKey = this._config.sync_key;
         viewModel.config = this._config;
 
-        res.render("sync", viewModel);
+        this._renderFile(res, viewModel, 'sync');
     }
 
     /**
@@ -173,6 +173,12 @@ class SyncController {
 
         res.json({ message: "Invalid Sync Key" });
         return false;
+    }
+
+    _renderFile(res, viewModel, pagename) {
+        viewModel.layout = `${this._config.theme_dir}${this._config.theme_name}/templates/layout.html`;
+
+        return res.render(require.resolve(`${this._config.theme_dir}${this._config.theme_name}/templates/${pagename}.html`), viewModel);
     }
 }
 

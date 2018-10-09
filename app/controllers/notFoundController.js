@@ -32,7 +32,13 @@ class NotFoundController {
         viewModel.title = this._storageProvider.slugToTitle(req.params.slug);
         viewModel.config = this._config;
 
-        res.render("404", viewModel);
+        this._renderFile(res, viewModel, '404');
+    }
+
+    _renderFile(res, viewModel, pagename) {
+        viewModel.layout = `${this._config.theme_dir}${this._config.theme_name}/templates/layout.html`;
+
+        return res.render(require.resolve(`${this._config.theme_dir}${this._config.theme_name}/templates/${pagename}.html`), viewModel);
     }
 }
 

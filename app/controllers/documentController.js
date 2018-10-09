@@ -57,7 +57,8 @@ class DocumentController {
         viewModel.recentDocuments = this._fetchRecentDocuments(5);
         viewModel.config = this._config;
         // render content
-        res.render("document", viewModel);
+
+        this._renderFile(res, viewModel, 'document')
     }
 
     /**
@@ -82,7 +83,7 @@ class DocumentController {
         viewModel.document = document;
         viewModel.config = this._config;
 
-        res.render("edit", viewModel);
+        this._renderFile(res, viewModel, 'edit')
     }
 
     /**
@@ -161,7 +162,7 @@ class DocumentController {
         viewModel.title = document.title;
         viewModel.config = this._config;
 
-        res.render("edit", viewModel);
+        this._renderFile(res, viewModel, 'edit')
     }
 
     /**
@@ -198,6 +199,12 @@ class DocumentController {
             .reject({ "title": title })
             .take(count)
             .value();
+    }
+
+    _renderFile(res, viewModel, pagename) {
+        viewModel.layout = `${this._config.theme_dir}${this._config.theme_name}/templates/layout.html`;
+
+        return res.render(require.resolve(`${this._config.theme_dir}${this._config.theme_name}/templates/${pagename}.html`), viewModel);
     }
 }
 

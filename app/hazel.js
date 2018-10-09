@@ -35,7 +35,7 @@ class Hazel {
         this._authProvider          = new AuthProvider(this._config);
         this._documentParserUtility = new DocumentParserUtility();
         this._storageProvider       = new StorageProvider(this._config, this._documentParserUtility);
-        this._documentRepository    = new DocumentRepository(this._storageProvider);
+        this._documentRepository    = new DocumentRepository(this._storageProvider, this._config);
         this._searchProvider        = new SearchProvider(this._documentRepository, this._config);
         this._analyticsService      = new AnalyticsService(this._storageProvider);
 
@@ -67,10 +67,14 @@ class Hazel {
         this._server = express();
 
         // Setup Views
-        this._config.theme_dir = this._config.theme_dir || path.join(__dirname, "..", "themes");
-        this._config.theme_name = this._config.theme_name || "default";
+        const defaultTheme = {
+            name: this._config.theme_name,
+            dir: this._config.theme_dir,
+        };
+        // this._config.theme_dir = this._config.theme_dir || path.join(__dirname, "..", "themes");
+        // this._config.theme_name = this._config.theme_name || "default";
 
-        this._server.set("views", path.join(this._config.theme_dir, this._config.theme_name, "templates"));
+        // this._server.set("views", path.join(this._config.theme_dir, this._config.theme_name, "templates"));
         this._server.use(layouts);
         this._server.set("layout extractScripts", true);
         this._server.set("layout extractStyles", true);
@@ -83,6 +87,26 @@ class Hazel {
         this._server.use(express.static(this._config.public_dir));
         this._server.use('/uploads', express.static(this._config.uploads_dir));
         this._server.use(bodyParser.urlencoded({ extended: false }));
+
+        this._server.use((req, res, next) => {
+            if (req.headers.tags) {
+                const [ divider ] = this._config.dividers.filter(divider =>
+                    divider.header = req.headers.tags
+                );
+
+                this._documentRepository._documents = this._documentRepository._allDocuments[divider.header];
+
+                this._config.theme_dir = divider.theme.dir;
+                this._config.theme_name = divider.theme.name;
+
+            } else {
+                this._documentRepository._documents = this._documentRepository._allDocuments.default;
+
+                this._config.theme_dir = defaultTheme.dir;
+                this._config.theme_name = defaultTheme.name;
+            }
+            next();
+        })
     }
 }
 

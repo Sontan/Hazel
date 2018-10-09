@@ -66,7 +66,24 @@ var config = {
     credentials: {
         username: "",
         password: ""
-    }
+    },
+    dividers: [
+        {
+            tags: ['by', 'staronka'],
+            header: 'staronka.by',
+            theme: {
+                name: 'help',
+                dir: __dirname + "/themes/",
+            }
+        },
+        // {
+        //     tags: ['by', 'koshyk'],
+        //     headers: {
+        //         application: 'koshyk',
+        //         region: 'by'
+        //     }
+        // }
+    ]
 };
 
 module.exports = config;

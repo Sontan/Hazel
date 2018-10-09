@@ -35,7 +35,7 @@ class TagController {
 
         viewModel.config = this._config;
 
-        res.render("tag", viewModel);
+        this._renderFile(res, viewModel, 'tag');
     }
 
 
@@ -53,6 +53,11 @@ class TagController {
             .value();
     }
 
+    _renderFile(res, viewModel, pagename) {
+        viewModel.layout = `${this._config.theme_dir}${this._config.theme_name}/templates/layout.html`;
+
+        return res.render(require.resolve(`${this._config.theme_dir}${this._config.theme_name}/templates/${pagename}.html`), viewModel);
+    }
 }
 
 module.exports = TagController;
