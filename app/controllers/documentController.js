@@ -33,6 +33,8 @@ class DocumentController {
         this._server.get("/:slug", this._auth, this.detail.bind(this));
         // /upload
         this._server.post("/upload", this._auth, this.upload.bind(this));
+        // /documents
+        this._server.get('/documents', this._auth, this.documents.bind(this));
     }
 
     /**
@@ -175,6 +177,17 @@ class DocumentController {
             }
             return res.status( 200 ).send( req.file.filename );
         });
+    }
+
+    /**
+     * GET : Return all documents but parsed
+     */
+    documents(req, res, next) {
+        const documents = this._documents.all();
+        documents.forEach((document) => {
+            document.html = marked(document.markdown);
+        })
+        return res.send(documents);
     }
 
     /**

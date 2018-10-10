@@ -15,6 +15,7 @@ class SearchController {
     _bindRoutes() {
         // /search
         this._server.get("/search", this._auth, this.index.bind(this));
+        this._server.get('/externalsearch', this._auth, this.searchFromExternalPage.bind(this))
     }
 
     /**
@@ -32,6 +33,21 @@ class SearchController {
         viewModel.config = this._config;
 
         this._renderFile(res, viewModel, 'search');
+    }
+
+    /**
+     * Return matched documents with parsed markdown
+     */
+    searchFromExternalPage(req, res, next) {
+        var viewModel = new SearchViewModel();
+
+        if (req.query.s) {
+            let term = decodeURIComponent(req.query.s);
+            viewModel.searchTerm = term;
+            viewModel.searchResults = this._searchProvider.searchAndParse(term);
+        }
+
+        return res.send(viewModel);
     }
 
     _renderFile(res, viewModel, pagename) {

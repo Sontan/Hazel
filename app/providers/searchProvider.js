@@ -57,6 +57,16 @@ class SearchProvider {
     }
 
     /**
+     * Updates term search count and does document search + parsing for the provided
+     * search term.
+     * @param term [string] - term to search for within documents
+     */
+    searchAndParse(term) {
+        this.updateTermCount(term);
+        return this.externalSearch(term);
+    }
+
+    /**
      * Will do a document search with the given search term
      * @param term [string] - term to search for within documents
      */
@@ -70,6 +80,23 @@ class SearchProvider {
             .forEach((document) => {
                 let excerpt = document.markdown.substring(0, this._excerptLength) + " ...";
                 document.html = marked(excerpt);
+            })
+            .value();
+    }
+
+    /**
+     * Will do a document search + full parsing with the given search term
+     * @param term [string] - term to search for within documents
+     */
+    externalSearch(term) {
+        let results = this._index.search(term);
+
+        // map the results to the documents and create excerpts
+        return _.chain(results)
+            .map((result) => _.find(this._documents.all(), { "slug": result.ref }))
+            .filter((document) => document != null)
+            .forEach((document) => {
+                document.html = marked(document.markdown);
             })
             .value();
     }

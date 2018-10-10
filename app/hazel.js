@@ -71,10 +71,7 @@ class Hazel {
             name: this._config.theme_name,
             dir: this._config.theme_dir,
         };
-        // this._config.theme_dir = this._config.theme_dir || path.join(__dirname, "..", "themes");
-        // this._config.theme_name = this._config.theme_name || "default";
-
-        // this._server.set("views", path.join(this._config.theme_dir, this._config.theme_name, "templates"));
+        
         this._server.use(layouts);
         this._server.set("layout extractScripts", true);
         this._server.set("layout extractStyles", true);
